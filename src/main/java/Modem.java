@@ -1,5 +1,5 @@
 public class Modem {
-    private String ip;
+    private final String ip;
     private int rsl;
     private float ebNo;
     private long timestamp;
