@@ -4,7 +4,7 @@ public class ModemThread extends Thread{
         this.id = id;
     }
     public void run(){
-        Modem modem = new Modem(id+"");
+        Modem modem = new Modem("192.168.100.11"+id);
         while (true)
         {
             long millis = System.currentTimeMillis();

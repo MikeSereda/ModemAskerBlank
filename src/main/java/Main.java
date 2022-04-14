@@ -4,7 +4,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         List<ModemThread> threads = new ArrayList<>();
-        for (int i=0; i<8; i++){
+        for (int i=1; i<9; i++){
             long millis = System.currentTimeMillis();
             threads.add(new ModemThread(i));
             threads.get(i).start();
