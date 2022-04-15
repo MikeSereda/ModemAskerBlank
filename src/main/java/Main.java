@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args){
@@ -11,7 +12,7 @@ public class Main {
             threads.get(i).start();
             while (System.currentTimeMillis() - millis < 1000) {
                 try {
-                    Thread.sleep(1);
+                    TimeUnit.MILLISECONDS.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

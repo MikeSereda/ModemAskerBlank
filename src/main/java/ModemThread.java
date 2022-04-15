@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class ModemThread extends Thread{
     private final int id;
@@ -15,10 +16,11 @@ public class ModemThread extends Thread{
                 modemDAO.saveValuesToDB();
             } catch (IOException e) {
                 e.printStackTrace();
+                break;
             }
             while (System.currentTimeMillis() - millis < 8000) {
                 try {
-                    Thread.sleep(1);
+                    TimeUnit.MILLISECONDS.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
