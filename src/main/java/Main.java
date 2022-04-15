@@ -1,12 +1,13 @@
 import java.util.ArrayList;
+
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args){
         List<ModemThread> threads = new ArrayList<>();
-        for (int i=1; i<9; i++){
+        for (int i=0; i<4; i++){
             long millis = System.currentTimeMillis();
-            threads.add(new ModemThread(i));
+            threads.add(new ModemThread(i+1));
             threads.get(i).start();
             while (System.currentTimeMillis() - millis < 1000) {
                 try {

@@ -1,6 +1,9 @@
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 public class Modem {
     private final String ip;
@@ -9,6 +12,7 @@ public class Modem {
     private float ebNo;
     private float ebNoRemote;
     private float txPowerLevelIncrease;
+    private float ber;
     private String unitAlarm;
     private String txAlarm;
     private String rxAlarm;
@@ -18,23 +22,38 @@ public class Modem {
         this.ip = ip;
     }
 
-    private void getValuesFromPage(){
+    private void getValuesFromPage() throws IOException {
         System.out.println(ip+" modem gets values from page");
-        HashMap<String,String> valuesMap = new HashMap<>();
-        valuesMap.put("rsl",null);
-        valuesMap.put("temperature",null);
-        valuesMap.put("ebNo",null);
-        valuesMap.put("ebNoRemote",null);
-        valuesMap.put("txPowerLevelIncrease",null);
-        valuesMap.put("unitAlarm",null);
-        valuesMap.put("txAlarm",null);
-        valuesMap.put("rxAlarm",null);
-        valuesMap.put("oduAlarm",null);
-        normalizeValues2(valuesMap);
+        File file = new File(ip);
+        Document document = Jsoup.parse(file, "UTF-8", "192.168.100.111");
+
+        this.rsl = normalizeInteger(document.select("td").get(37).text());
+        this.ber = normalizeFloat(document.select("td").get(25).text());
+        this.temperature = normalizeInteger(document.select("td").get(27).text());
+        this.ebNo = normalizeFloat(document.select("td").get(29).text());
+        this.ebNoRemote = normalizeFloat(document.select("td").get(48).text());
+        this.txPowerLevelIncrease = normalizeFloat(document.select("td").get(52).text());
+        this.unitAlarm = document.select("td").get(6).text();
+        this.txAlarm = document.select("td").get(10).text();
+        this.rxAlarm = document.select("td").get(14).text();
+        this.oduAlarm = document.select("td").get(18).text();
+
+
+/*      HashMap<String,String> valuesMap = new HashMap<>();
+        valuesMap.put("rsl",document.select("td").get(37).text());
+        valuesMap.put("temperature",document.select("td").get(27).text());
+        valuesMap.put("ebNo",document.select("td").get(29).text());
+        valuesMap.put("ebNoRemote",document.select("td").get(48).text());
+        valuesMap.put("txPowerLevelIncrease",document.select("td").get(52).text());
+        valuesMap.put("unitAlarm", document.select("td").get(6).text());
+        valuesMap.put("txAlarm",document.select("td").get(10).text());
+        valuesMap.put("rxAlarm",document.select("td").get(14).text());
+        valuesMap.put("oduAlarm",document.select("td").get(18).text());
+        normalizeValues(valuesMap);*/
     }
-    private void normalizeValues2(HashMap<String, String> map){
+/*    private void normalizeValues(HashMap<String, String> map){
         this.rsl = Integer.parseInt(map.get("rsl").replaceAll("[^0-9]",""));
-        this.temperature = Integer.parseInt(map.get("").replaceAll("[^0-9]",""));
+        this.temperature = Integer.parseInt(map.get("temperature").replaceAll("[^0-9]",""));
         //--------------------------------------------------------------------------------------------------------------
         if (map.get("ebNo").contains("Demod")){
             this.ebNo = -404;
@@ -63,81 +82,41 @@ public class Modem {
         this.unitAlarm = map.get("unitAlarm");
 
         System.out.println(map.size()+" values has been normalized and assigned");
+    }*/
+
+    private int normalizeInteger(String inputValue){
+        return Integer.parseInt(inputValue.replaceAll("[^0-9]",""));
     }
 
-    private void normalizeValues(String rslString, String temperatureString, String ebNoString,
-                                String ebNoRemoteString, String txPowerLevelIncreaseString, String unitAlarmString,
-                                String txAlarmString, String rxAlarmString, String oduAlarmString){
-        this.rsl = Integer.parseInt(rslString.replaceAll("[^0-9]",""));
-        this.temperature = Integer.parseInt(temperatureString.replaceAll("[^0-9]",""));
-        //--------------------------------------------------------------------------------------------------------------
-        if (ebNoString.contains("Demod")){
-            this.ebNo = -404;
+    private float normalizeFloat(String inputValue){
+        if (inputValue.contains("Demod") || inputValue.contains("AUPC") || inputValue.contains("EDMAC") ){
+            return -404;
         }
         else {
-            this.ebNo = Float.parseFloat(ebNoString.replaceAll("[^0-9.,]",""));
+            System.out.println(inputValue);
+            return Float.parseFloat(inputValue.replaceAll("[^0-9.,]",""));
         }
-        //--------------------------------------------------------------------------------------------------------------
-        if (ebNoRemoteString.contains("Demod")){
-            this.ebNoRemote = -404;
-        }
-        else {
-            this.ebNoRemote = Float.parseFloat(ebNoRemoteString.replaceAll("[^0-9.,]",""));
-        }
-        //--------------------------------------------------------------------------------------------------------------
-        if (txPowerLevelIncreaseString.contains("AUPC")){
-            this.txPowerLevelIncrease = -404;
-        }
-        else {
-            this.txPowerLevelIncrease = Float.parseFloat(txPowerLevelIncreaseString.replaceAll("[^0-9.,]",""));
-        }
-        //--------------------------------------------------------------------------------------------------------------
-        this.oduAlarm = oduAlarmString;
-        this.txAlarm = txAlarmString;
-        this.rxAlarm = rxAlarmString;
-        this.unitAlarm = unitAlarmString;
     }
 
-    public void refreshValues(){
+    public void refreshValues() throws IOException {
         getValuesFromPage();
         //somthing else
         System.out.println(ip+" modem added common values from System");
     }
 
-    public int getRsl() {
-        return rsl;
-    }
-
-    public int getTemperature() {
-        return temperature;
-    }
-
-    public float getEbNo() {
-        return ebNo;
-    }
-
-    public float getEbNoRemote() {
-        return ebNoRemote;
-    }
-
-    public float getTxPowerLevelIncrease() {
-        return txPowerLevelIncrease;
-    }
-
-    public String getUnitAlarm() {
-        return unitAlarm;
-    }
-
-    public String getTxAlarm() {
-        return txAlarm;
-    }
-
-    public String getRxAlarm() {
-        return rxAlarm;
-    }
-
-    public String getOduAlarm() {
-        return oduAlarm;
+    public HashMap<String,Object> getValues(){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("rsl",rsl);
+        map.put("temperature",temperature);
+        map.put("ebNo",ebNo);
+        map.put("ebNoRemote",ebNoRemote);
+        map.put("ber", ber);
+        map.put("txPowerLevelIncrease",txPowerLevelIncrease);
+        map.put("unitAlarm",unitAlarm);
+        map.put("txAlarm",txAlarm);
+        map.put("rxAlarm",rxAlarm);
+        map.put("oduAlarm",oduAlarm);
+        return map;
     }
 
     public String getIp() {

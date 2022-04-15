@@ -1,15 +1,21 @@
+import java.io.IOException;
+
 public class ModemThread extends Thread{
-    private int id;
+    private final int id;
     public ModemThread(int id){
         this.id = id;
     }
     public void run(){
-        Modem modem = new Modem("192.168.100.11"+id);
+        Modem modem = new Modem("cdm html/Modem Status"+id+".html");
         while (true)
         {
             long millis = System.currentTimeMillis();
-            ModemDAO modemDAO = new ModemDAO();
-            modemDAO.saveValuesToDB(modem);
+            ModemDAO modemDAO = new ModemDAO(modem);
+            try {
+                modemDAO.saveValuesToDB();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             while (System.currentTimeMillis() - millis < 8000) {
                 try {
                     Thread.sleep(1);
