@@ -3,9 +3,11 @@ import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 public class Modem {
+    private final int id;
     private final String ip;
     private int rsl;
     private int temperature;
@@ -17,9 +19,11 @@ public class Modem {
     private String txAlarm;
     private String rxAlarm;
     private String oduAlarm;
+    private LocalDateTime timestampWotz;
 
-    public Modem(String ip){
-        this.ip = ip;
+    public Modem(int id, String ip){
+        this.id = id;
+        this.ip = "cdm html/Modem Status"+ip+".html";
     }
 
     private void getValuesFromPage() throws IOException {
@@ -93,13 +97,14 @@ public class Modem {
             return -404;
         }
         else {
-            System.out.println(inputValue);
+            //System.out.println(inputValue);
             return Float.parseFloat(inputValue.replaceAll("[^0-9.,]",""));
         }
     }
 
     public void refreshValues() throws IOException {
         getValuesFromPage();
+        this.timestampWotz = LocalDateTime.now();
         //somthing else
         System.out.println(ip+" modem added common values from System");
     }
@@ -116,10 +121,15 @@ public class Modem {
         map.put("txAlarm",txAlarm);
         map.put("rxAlarm",rxAlarm);
         map.put("oduAlarm",oduAlarm);
+        map.put("timestampWotz",timestampWotz);
         return map;
     }
 
     public String getIp() {
         return ip;
+    }
+
+    public int getId() {
+        return id;
     }
 }
