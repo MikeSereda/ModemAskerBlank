@@ -23,7 +23,7 @@ public class Modem {
 
     public Modem(int id, String ip){
         this.id = id;
-        this.ip = "cdm html/Modem Status"+ip+".html";
+        this.ip = "cdm html/Modem Status"+id+".html";
     }
 
     private void getValuesFromPage() throws IOException {
@@ -97,8 +97,17 @@ public class Modem {
             return -404;
         }
         else {
-            //System.out.println(inputValue);
-            return Float.parseFloat(inputValue.replaceAll("[^0-9.,]",""));
+            if (inputValue.contains("E-")){
+                float value = Float.parseFloat(inputValue);
+                if (value<Float.parseFloat("1E-9"))
+                    return 0;
+                else
+                    return ((float)(10+Math.log10(value)));
+            }
+            else {
+                //System.out.println(inputValue);
+                return Float.parseFloat(inputValue.replaceAll("[^0-9.,]",""));
+            }
         }
     }
 
