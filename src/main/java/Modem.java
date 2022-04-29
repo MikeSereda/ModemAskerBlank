@@ -23,13 +23,15 @@ public class Modem {
 
     public Modem(int id, String ip){
         this.id = id;
-        this.ip = "cdm html/Modem Status"+id+".html";
+        //this.ip = "cdm html/Modem Status"+id+".html";
+        this.ip = ip;
     }
 
     private void getValuesFromPage() throws IOException {
         System.out.println(ip+" modem gets values from page");
-        File file = new File(ip);
-        Document document = Jsoup.parse(file, "UTF-8", "192.168.100.111");
+        //File file = new File(ip);
+        //Document document = Jsoup.parse(file, "UTF-8", "192.168.100.111");
+        Document document = Jsoup.connect(ip).get();
 
         this.rsl = normalizeInteger(document.select("td").get(37).text());
         this.ber = normalizeFloat(document.select("td").get(25).text());
