@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS public.modems_jdbc_test1
+(
+    "ebNo" real DEFAULT '-404'::integer,
+    "unitAlarm" text COLLATE pg_catalog."default" DEFAULT '-404'::integer,
+    "txAlarm" text COLLATE pg_catalog."default" DEFAULT '-404'::integer,
+    temperature smallint DEFAULT '-404'::integer,
+    "rxAlarm" text COLLATE pg_catalog."default" DEFAULT '-404'::integer,
+    rsl smallint DEFAULT '-404'::integer,
+    ber real DEFAULT '-404'::integer,
+    "txPowerLevelIncrease" real DEFAULT '-404'::integer,
+    "oduAlarm" text COLLATE pg_catalog."default" DEFAULT '-404'::integer,
+    "ebNoRemote" real DEFAULT '-404'::integer,
+    modem_name text COLLATE pg_catalog."default" NOT NULL,
+    "timestampWotz" time without time zone NOT NULL,
+    CONSTRAINT modems_jdbc_test1_pkey PRIMARY KEY (modem_name,"timestampWotz")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.modems_jdbc_test1
+    OWNER to postgres;

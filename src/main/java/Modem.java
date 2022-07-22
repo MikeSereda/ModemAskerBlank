@@ -3,12 +3,26 @@ import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 
 public class Modem {
-    private final int id;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    private boolean isDevice;
+
+    private final String name;
     private final String ip;
+    private String type;
+    private String id;
+    private int port;
+    private String description;
+    private String location;
+
     private int rsl;
     private int temperature;
     private float ebNo;
@@ -21,74 +35,88 @@ public class Modem {
     private String oduAlarm;
     private LocalDateTime timestampWotz;
 
-    public Modem(int id, String ip){
-        this.id = id;
+    public Modem(String name, String ip, boolean isDevice){
+        this.name = name;
+        this.isDevice = isDevice;
         //this.ip = "cdm html/Modem Status"+id+".html";
         this.ip = ip;
     }
 
-    private void getValuesFromPage() throws IOException {
-        System.out.println(ip+" modem gets values from page");
-        //File file = new File(ip);
-        //Document document = Jsoup.parse(file, "UTF-8", "192.168.100.111");
-        Document document = Jsoup.connect(ip).get();
-
-        this.rsl = normalizeInteger(document.select("td").get(37).text());
-        this.ber = normalizeFloat(document.select("td").get(25).text());
-        this.temperature = normalizeInteger(document.select("td").get(27).text());
-        this.ebNo = normalizeFloat(document.select("td").get(29).text());
-        this.ebNoRemote = normalizeFloat(document.select("td").get(48).text());
-        this.txPowerLevelIncrease = normalizeFloat(document.select("td").get(52).text());
-        this.unitAlarm = document.select("td").get(6).text();
-        this.txAlarm = document.select("td").get(10).text();
-        this.rxAlarm = document.select("td").get(14).text();
-        this.oduAlarm = document.select("td").get(18).text();
-
-
-/*      HashMap<String,String> valuesMap = new HashMap<>();
-        valuesMap.put("rsl",document.select("td").get(37).text());
-        valuesMap.put("temperature",document.select("td").get(27).text());
-        valuesMap.put("ebNo",document.select("td").get(29).text());
-        valuesMap.put("ebNoRemote",document.select("td").get(48).text());
-        valuesMap.put("txPowerLevelIncrease",document.select("td").get(52).text());
-        valuesMap.put("unitAlarm", document.select("td").get(6).text());
-        valuesMap.put("txAlarm",document.select("td").get(10).text());
-        valuesMap.put("rxAlarm",document.select("td").get(14).text());
-        valuesMap.put("oduAlarm",document.select("td").get(18).text());
-        normalizeValues(valuesMap);*/
+    public String getType() {
+        return type;
     }
-/*    private void normalizeValues(HashMap<String, String> map){
-        this.rsl = Integer.parseInt(map.get("rsl").replaceAll("[^0-9]",""));
-        this.temperature = Integer.parseInt(map.get("temperature").replaceAll("[^0-9]",""));
-        //--------------------------------------------------------------------------------------------------------------
-        if (map.get("ebNo").contains("Demod")){
-            this.ebNo = -404;
-        }
-        else {
-            this.ebNo = Float.parseFloat(map.get("ebNo").replaceAll("[^0-9.,]",""));
-        }
-        //--------------------------------------------------------------------------------------------------------------
-        if (map.get("ebNoRemote").contains("Demod")){
-            this.ebNoRemote = -404;
-        }
-        else {
-            this.ebNoRemote = Float.parseFloat(map.get("ebNoRemote").replaceAll("[^0-9.,]",""));
-        }
-        //--------------------------------------------------------------------------------------------------------------
-        if (map.get("txPowerLevelIncrease").contains("AUPC")){
-            this.txPowerLevelIncrease = -404;
-        }
-        else {
-            this.txPowerLevelIncrease = Float.parseFloat(map.get("txPowerLevelIncrease").replaceAll("[^0-9.,]",""));
-        }
-        //--------------------------------------------------------------------------------------------------------------
-        this.oduAlarm = map.get("oduAlarm");
-        this.txAlarm = map.get("txAlarm");
-        this.rxAlarm = map.get("rxAlarm");
-        this.unitAlarm = map.get("unitAlarm");
 
-        System.out.println(map.size()+" values has been normalized and assigned");
-    }*/
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    private void getValuesFromPage() throws IOException {
+        Document document;
+        if (isDevice){
+            System.out.println(ip+" modem gets values from page");
+            document = Jsoup.connect(ip).get();
+            this.rsl = normalizeInteger(document.select("td").get(37).text());
+            this.ber = normalizeFloat(document.select("td").get(25).text());
+            this.temperature = normalizeInteger(document.select("td").get(27).text());
+            this.ebNo = normalizeFloat(document.select("td").get(29).text());
+            this.ebNoRemote = normalizeFloat(document.select("td").get(48).text());
+            this.txPowerLevelIncrease = normalizeFloat(document.select("td").get(52).text());
+            this.unitAlarm = document.select("td").get(6).text();
+            this.txAlarm = document.select("td").get(10).text();
+            this.rxAlarm = document.select("td").get(14).text();
+            this.oduAlarm = document.select("td").get(18).text();
+        }
+        else {
+            System.out.println("Modem gets values from static page");
+            this.rsl = 65;
+            this.ber = 7;
+            this.temperature = 23;
+            this.ebNo = BigDecimal.valueOf(7 + 1*(0.5-Math.random()))
+                    .setScale(1, BigDecimal.ROUND_HALF_DOWN)
+                    .floatValue();
+            this.ebNoRemote = BigDecimal.valueOf(6.1 + 1*(0.5-Math.random()))
+                    .setScale(1, BigDecimal.ROUND_HALF_DOWN)
+                    .floatValue();
+            this.txPowerLevelIncrease = (float) 2.1;
+            this.unitAlarm = "Unit from file";
+            this.txAlarm = "Tx from file";
+            this.rxAlarm = "Rx from file";
+            this.oduAlarm = "Odu from file";
+        }
+
+    }
 
     private int normalizeInteger(String inputValue){
         return Integer.parseInt(inputValue.replaceAll("[^0-9]",""));
@@ -115,7 +143,7 @@ public class Modem {
 
     public void refreshValues() throws IOException {
         getValuesFromPage();
-        this.timestampWotz = LocalDateTime.now();
+        this.timestampWotz = (LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         //somthing else
         System.out.println(ip+" modem added common values from System");
     }
@@ -140,7 +168,7 @@ public class Modem {
         return ip;
     }
 
-    public int getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 }

@@ -1,23 +1,53 @@
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 public class ModemDAO {
 
     private final JdbcTemplate jdbcTemplate;
-    Modem modem;
+    private Modem modem;
+    private ModemTimerTask modemTimerTask;
 
     public ModemDAO(Modem modem, JdbcTemplate jdbcTemplate){
         this.modem = modem;
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    public ModemTimerTask getModemTimerTask() {
+        return modemTimerTask;
+    }
+
+    public void setModemTimerTask(ModemTimerTask modemTimerTask) {
+        this.modemTimerTask = modemTimerTask;
+    }
+
+    public Modem getModem() {
+        return modem;
+    }
+
+    public void stopTimerTask(){
+        modemTimerTask.cancel();
+    }
+
     public void saveValuesToDB() throws IOException {
         modem.refreshValues();
         HashMap<String, Object> map = modem.getValues();
-        jdbcTemplate.update("INSERT INTO cdm11"+modem.getId()+" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                , map.get("ebNo"), map.get("unitAlarm"), map.get("txAlarm"), map.get("temperature"), map.get("rxAlarm"), map.get("rsl")
-                , map.get("ber"), map.get("txPowerLevelIncrease"), map.get("oduAlarm"), map.get("ebNoRemote"), map.get("timestampWotz"));
+        jdbcTemplate.update("INSERT INTO parameters VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                modem.getId(),
+                map.get("timestampWotz"),
+                map.get("temperature"),
+                map.get("rsl"),
+                map.get("ebNo"),
+                map.get("ber"),
+                map.get("ebNoRemote"),
+                map.get("txPowerLevelIncrease"),
+                map.get("unitAlarm"),
+                map.get("txAlarm"),
+                map.get("rxAlarm"),
+                map.get("oduAlarm"));
         for (String item:map.keySet()){
             System.out.println(modem.getIp()+": "+item+": "+map.get(item));
         }

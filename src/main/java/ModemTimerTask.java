@@ -7,8 +7,9 @@ public class ModemTimerTask extends TimerTask {
 
     private final ModemDAO modemDAO;
 
-    public ModemTimerTask(int modemId, String modemIp, JdbcTemplate jdbcTemplate) {
-        modemDAO = new ModemDAO(new Modem(modemId,modemIp),jdbcTemplate);
+    public ModemTimerTask(Modem modem, JdbcTemplate jdbcTemplate) {
+        modemDAO = new ModemDAO(modem,jdbcTemplate);
+        modemDAO.setModemTimerTask(this);
     }
 
     @Override
