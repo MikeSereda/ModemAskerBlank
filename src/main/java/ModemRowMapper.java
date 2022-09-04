@@ -12,11 +12,16 @@ public class ModemRowMapper implements RowMapper<Modem> {
 
     @Override
     public Modem mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Modem modem = new Modem(rs.getString("name"),rs.getString("ip"),isRealDevice);
+        Modem modem = new Modem(
+                rs.getString("name"),
+                rs.getString("ip"),
+                isRealDevice);
+
         modem.setId(rs.getString("id"));
         modem.setPort(rs.getInt("port"));
         modem.setDescription(rs.getString("description"));
         modem.setLocation(rs.getString("location"));
+
         return modem;
     }
 }

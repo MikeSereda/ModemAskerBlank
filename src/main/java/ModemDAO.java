@@ -35,7 +35,7 @@ public class ModemDAO {
     public void saveValuesToDB() throws IOException {
         modem.refreshValues();
         HashMap<String, Object> map = modem.getValues();
-        jdbcTemplate.update("INSERT INTO parameters VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO parameters VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 modem.getId(),
                 map.get("timestampWotz"),
                 map.get("temperature"),
@@ -47,10 +47,10 @@ public class ModemDAO {
                 map.get("unitAlarm"),
                 map.get("txAlarm"),
                 map.get("rxAlarm"),
-                map.get("oduAlarm"));
-        for (String item:map.keySet()){
-            System.out.println(modem.getIp()+": "+item+": "+map.get(item));
-        }
+                map.get("oduAlarm"),
+                map.get("reachable"),
+                map.get("modemAskerVersion"));
+        System.out.println("saved to db");
         System.out.println();
         System.out.println("------------------------------------------------------");
         System.out.println();

@@ -5,16 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     static boolean startFlag = true;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         final JdbcTemplate jdbcTemplate;
         String url;
         int port;
+        int dockerDelay;
         String dbName;
         boolean isRealDevices;
         dataSource.setDriverClassName("org.postgresql.Driver");
@@ -36,7 +38,19 @@ public class Main {
         }
         else isRealDevices = Boolean.parseBoolean(System.getenv("ASKER_REAL_DEVICES"));
 
+
+        if (args.length>0){
+            isRealDevices = Boolean.parseBoolean(args[0]);
+        }
+        if (System.getenv("ASKER_WAIT_FOR_DB_DELAY")==null){
+            dockerDelay=0;
+        }
+        else dockerDelay = Integer.parseInt(System.getenv("ASKER_WAIT_FOR_DB_DELAY"));
+
         System.out.println("dataSource location is "+url+":"+port+"/"+dbName);
+        System.out.println("Waiting for db...");
+        TimeUnit.MILLISECONDS.sleep(dockerDelay);
+        System.out.println("Time is over, connecting...");
         dataSource.setUrl("jdbc:postgresql://"+url+":"+port+"/"+dbName);
         dataSource.setUsername("admin");
         dataSource.setPassword("admin");

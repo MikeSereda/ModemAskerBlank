@@ -1,0 +1,11 @@
+version: "3.3"
+services:
+  asker:
+    image: asker
+    environment:
+      TZ: "Europe/Moscow"
+      ASKER_DB_ADDR: ""
+      ASKER_DB_PORT: ""
+      ASKER_DB_NAME: "sau_rest"
+      ASKER_REAL_DEVICES: "true"
+    restart: unless-stopped
