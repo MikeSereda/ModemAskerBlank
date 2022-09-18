@@ -28,7 +28,7 @@ public class ApplicationTask extends TimerTask {
             if (!modemDAOHashMap.containsKey(modem.getId())){
                 modemDAOHashMap.put(modem.getId(), new ModemDAO(modem,template));
                 modemTimerTaskHashMap.put(modem.getId(), new ModemTimerTask(modem,this.template));
-                timer.scheduleAtFixedRate(modemTimerTaskHashMap.get(modem.getId()),0,5000);
+                timer.scheduleAtFixedRate(modemTimerTaskHashMap.get(modem.getId()),0,1000);
                 modemDAOHashMap.get(modem.getId()).setModemTimerTask(modemTimerTaskHashMap.get(modem.getId()));
 
             }

@@ -25,25 +25,27 @@ public class Main {
             url = "localhost";
         }
         else url = System.getenv("ASKER_DB_ADDR");
+
         if (System.getenv("ASKER_DB_PORT")==null){
             port=5432;
         }
         else port = Integer.parseInt(System.getenv("ASKER_DB_PORT"));
+
         if (System.getenv("ASKER_DB_NAME")==null){
             dbName = "sau_rest";
         }
         else dbName = System.getenv("ASKER_DB_NAME");
+
         if (System.getenv("ASKER_REAL_DEVICES")==null){
             isRealDevices = false;
         }
         else isRealDevices = Boolean.parseBoolean(System.getenv("ASKER_REAL_DEVICES"));
 
-
         if (args.length>0){
             isRealDevices = Boolean.parseBoolean(args[0]);
         }
         if (System.getenv("ASKER_WAIT_FOR_DB_DELAY")==null){
-            dockerDelay=0;
+            dockerDelay=15000;
         }
         else dockerDelay = Integer.parseInt(System.getenv("ASKER_WAIT_FOR_DB_DELAY"));
 

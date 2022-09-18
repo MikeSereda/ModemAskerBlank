@@ -41,7 +41,7 @@ public class Modem {
     private LocalDateTime timestampWotz;
     private boolean reachable;
 
-    private static final String modemAskerVersion = "1.3 from 27.08.2022";
+    private static final String modemAskerVersion = "1.3d from 18.09.2022";
     private static int reachTimeout = 500;
 
     public Modem(String name, String ip, boolean isDevice){
@@ -199,7 +199,7 @@ public class Modem {
 
     public void refreshValues() throws IOException {
         getValuesFromPage();
-        this.timestampWotz = (LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        this.timestampWotz = (LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         //somthing else
 //        System.out.println(ip+" modem added common values from System");
     }
